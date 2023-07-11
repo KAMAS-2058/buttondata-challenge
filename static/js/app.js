@@ -10,76 +10,101 @@ let demoText = "ayy lamo"
 
 // initiating the function
 function init(){
-    console.log("init function working")
-    // Horizontal Bar graph
-    trace1 = {
-        x: xray,
-        y: yellow,
-        text: demoText,
-        type: 'bar',
-        orientation: 'h'
-    };
+    console.log("init function working");
 
-    layout1 = {
-        x:'Otu Labels',
-        y:'Sample Value',
-        title: 'Top ten otu ids\' for this individual',
-        height: 500,
-        width : 350
-    };
-
-    Plotly.newPlot('bar',trace1,layout1);
-
-    // Making the Bubble Chart
-
-    trace2 = {
-        x: xray,
-        y: yellow,
-        text: demoText,
-        mode:'markers',
-        marker:{
-            size:[40, 60, 80, 100]
-        }
-    }
-
-    layout2 = {
-        title: 'Bubble Chart',
-        showlegend: false,
-        height: 600,
-        width: 600
-    };
-
-    Plotly.newPlot('bubble',trace2);
-
-    // display the MetaData for the individual
-
-
-};
-
-d3.selectAll("#selDataset").on("change", getData);
-
-function updatePlots(){
-    let dropdownMenu =  d3.selesct("#selDataset")
-    let dataset = d3.dropdownmentu.property("value")
-    console.log("function to update plot working")
-    
-        d3.json(url).then((urlData) => {
-            console.log("api call working")
-            // take data from info from id the is equal to user selection
-            
-            
-
-            
+    function userInput(){
         
+        // making drop down menu
+        d3.selectAll("#selDataset").on("change",getUserInput)
 
-        })
-    updatePlots(data);
-};
+            function getUserInput(){
+                    d3.json(url).then((data) =>{
+                    console.log(data);
 
-function updatePlots(data_refreshed) {
-console.log("refreshed data input function working!")
+                    data.names.forEach((name) =>{
+                        dropdown.append('option').text(name).property('value')
+                    })
+                })
+                console.log('user input dropdown section working')
+            };
+        function getData(){
+            
 
-Plotly.restyle('Bar',,[data_refreshed])
-Plotly.restyle('Bubble',,[data_refreshed])
-}
+
+
+
+
+            function dataPlotMeta(){
+
+
+
+
+
+
+                // Horizontal Bar graph
+                trace1 = {
+                    x: xray,
+                    y: yellow,
+                    text: demoText,
+                    type: 'bar',
+                    orientation: 'h',
+                };
+
+                layout1 = {
+                    x:'Otu Labels',
+                    y:'Sample Value',
+                    title: 'Top ten otu ids\' for this individual',
+                };
+
+                Plotly.newPlot('bar',[trace1],layout1);
+
+                // Making the Bubble Chart
+
+                trace2 = {
+                    x: xray,
+                    y: yellow,
+                    text: demoText,
+                    mode:'markers',
+                    marker:{
+                        size:[40, 60, 80, 100]
+                    },
+                }
+
+                layout2 = {
+                    title: 'Bubble Chart',
+                    showlegend: false,
+
+                };
+
+                Plotly.newPlot('bubble', [trace2], layout2);
+
+                // display the MetaData for the individual
+            
+            
+            
+            };// data Plot Meta
+        };//get data
+    };//user input
+   
+}; // init function
 init();
+
+
+// function updatePlots(){
+//     // Use d3 to select the dropdown menu
+//     let dropdownMenu =  d3.selesct("#selDataset")
+//     //Assign the value of the dropdown mentu otion to a variable
+//     let dataset = d3.dropdownmentu.property("userInput")
+
+//     console.log("function to update plot working")
+    
+        
+//     updatePlots(data);
+// };
+
+// function updatePlots(data_refreshed) {
+// console.log("refreshed data input function working!")
+
+// Plotly.restyle('Bar',,[data_refreshed])
+// Plotly.restyle('Bubble',,[data_refreshed])
+// }
