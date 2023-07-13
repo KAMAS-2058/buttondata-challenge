@@ -1,85 +1,116 @@
 // api link
 const url = 'https://2u-data-curriculum-team.s3.amazonaws.com/dataviz-classroom/v1.1/14-Interactive-Web-Visualizations/02-Homework/samples.json'
 
-// demo data
+d3.json(url).then((urlData) =>{
+    console.log("1")
 
-let yellow = [22,55,77,99]
-let xray = ['blue','green','yellow','orange']
-let demoText = "ayy lamo"
-
-
-// initiating the function
-function init(){
-    console.log("init function working")
-    // Horizontal Bar graph
-    trace1 = {
-        x: xray,
-        y: yellow,
-        text: demoText,
-        type: 'bar',
-        orientation: 'h'
-    };
-
-    layout1 = {
-        x:'Otu Labels',
-        y:'Sample Value',
-        title: 'Top ten otu ids\' for this individual',
-        height: 500,
-        width : 350
-    };
-
-    Plotly.newPlot('bar',trace1,layout1);
-
-    // Making the Bubble Chart
-
-    trace2 = {
-        x: xray,
-        y: yellow,
-        text: demoText,
-        mode:'markers',
-        marker:{
-            size:[40, 60, 80, 100]
+    //making the dropdown fill
+    function dropDown(){
+        console.log("2")
+        for (let i=0; i < urlData.names.length; i++){
+            d3.select("#selDataset").append("option").text(urlData.names[i])
         }
-    }
-
-    layout2 = {
-        title: 'Bubble Chart',
-        showlegend: false,
-        height: 600,
-        width: 600
     };
-
-    Plotly.newPlot('bubble',trace2);
-
-    // display the MetaData for the individual
+    dropDown();
+});
 
 
-};
 
-d3.selectAll("#selDataset").on("change", getData);
 
-function updatePlots(){
-    let dropdownMenu =  d3.selesct("#selDataset")
-    let dataset = d3.dropdownmentu.property("value")
-    console.log("function to update plot working")
-    
-        d3.json(url).then((urlData) => {
-            console.log("api call working")
-            // take data from info from id the is equal to user selection
-            
-            
 
-            
+function graphing(){
+
+
+    d3.json(url).then((urlData) => {
+        console.log(urlData)
+
+        d3.select("#selDataset").on("change", function () {
+            let userInput = d3.select(this).property("value");
+
+            let chosen_otu = urlData.samples.find((sample) => sample.id === userInput);
+                console.log("chosen otu is chosen ", chosen_otu);
+
+
+            let samples_y = chosen_otu.sample_values.slice(0, 10);
+                console.log(samples_y);
+
+
+            let ids_x = chosen_otu.otu_ids.slice(0, 10);
+                console.log(ids_x);
+
+
+            let otu_text = chosen_otu.otu_labels.slice(0, 10);
+                console.log(otu_text);
+                
+
+            let metadata = urlData.metadata.find((meta) => meta.id === parseInt(userInput));
+            console.log("chosen otu metadata ", metadata);
+
+
+        function bar(){
+
+            const trace1 = {
+                type: 'bar',
+                x: samples_y.reverse(),
+                y: ids_x.reverse(),
+                orientation: 'h',
+                text: otu_text.reverse(),
+                
+            };
+
+            const layout1 = {
+                title: 'The most common Bacteria in Subject',
+                barmode: 'stack',
+                bargap: 0.2, 
+                width: 800, 
+                height: 400
+            };
+
+            Plotly.newPlot('bar',[trace1],layout1)
+        }
+        bar();
         
+        function bubble(){
+            
+            const trace2 = {
+                x: ids_x.reverse(),
+                y: samples_y.reverse(),
+                text: otu_text.reverse(),
+                mode : 'markers',
+                marker:{
+                    size: samples_y,
+                    color: ids_x
+                }
+            };
 
-        })
-    updatePlots(data);
-};
+            const layout2 = {
+                title: 'The most common Bacteria in Subject',
+            };
 
-function updatePlots(data_refreshed) {
-console.log("refreshed data input function working!")
+            Plotly.newPlot('bubble',[trace2],layout2)
 
-Plotly.restyle('Bar',,[data_refreshed])
-Plotly.restyle('Bubble',,[data_refreshed])
+        }
+        bubble();
+    
+        makingDemographics(metadata);
+})})}; // end for function for graphing 
+
+function makingDemographics (metadata){
+    var demoTable = d3.select("#sample-metadata");
+
+  // Clear the existing table if any
+  demoTable.html("");
+
+  // Create the table element
+ var table = demoTable.append("table").classed("sample-metadata", true);
+
+  // Create table rows and cells
+  Object.entries(metadata).forEach(([key, value]) => {
+    var row = table.append("tr");
+    row.append("td").text(key);
+    row.append("td").text(value);
+  });
 }
-init();
+
+ 
+graphing();
