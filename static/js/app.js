@@ -14,10 +14,6 @@ d3.json(url).then((urlData) =>{
     dropDown();
 });
 
-
-
-
-
 function graphing(){
 
 
